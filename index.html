@@ -210,12 +210,9 @@
 
         .gleiswarnung {
             font-size: 0.85rem;
-            font-weight: 700;
-            color: #c0392b;
-            background-color: #fdecea;
-            border-radius: 4px;
-            padding: 2px 6px;
-            margin-bottom: 4px;
+            font-weight: 600;
+            color: #d97706;
+            margin-bottom: 2px;
         }
 
         .gleis.abweichend {
@@ -468,7 +465,7 @@ function zugElement(d, standardGleis) {
     el.innerHTML =
         '<div>' +
         (gleisAbweichend
-            ? '<div class="gleiswarnung">⚠ Abfahrt heute von Gleis ' + gleis + ' (statt Gleis ' + standardGleis + ')!</div>'
+            ? '<div class="gleiswarnung">Abfahrt heute von Gleis ' + gleis + '!</div>'
             : '') +
         '<div class="zeit">' +
         (tatsaechlich
