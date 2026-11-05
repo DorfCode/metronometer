@@ -208,6 +208,20 @@
             margin-top: 2px;
         }
 
+        .gleiswarnung {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #c0392b;
+            background-color: #fdecea;
+            border-radius: 4px;
+            padding: 2px 6px;
+            margin-bottom: 4px;
+        }
+
+        .gleis.abweichend {
+            color: #e74c3c;
+        }
+
         .puenktlich { color: #1a8f3c; }
         .spaet { color: #d97706; }
         .ausfall { color: #e74c3c; }
@@ -298,7 +312,7 @@
     <div class="container">
         <h1>metronometer</h1>
 
-        <details data-station="Klecken" data-via="Harburg" data-richtung="harburg">
+        <details data-station="Klecken" data-via="Harburg" data-richtung="harburg" data-standardgleis="2">
             <summary>Klecken → Harburg</summary>
             <div class="faq-content">
                 <div class="liste"></div>
@@ -310,7 +324,7 @@
             </div>
         </details>
 
-        <details data-station="Klecken" data-via="Hamburg Hbf" data-richtung="Hamburg Hbf">
+        <details data-station="Klecken" data-via="Hamburg Hbf" data-richtung="Hamburg Hbf" data-standardgleis="2">
             <summary>Klecken → Hamburg HBF</summary>
             <div class="faq-content">
                 <div class="liste"></div>
@@ -429,7 +443,7 @@ function meldungen(d) {
     return eindeutig.map(t => t.replace(/[<>&]/g, "")).join(" · ");
 }
 
-function zugElement(d) {
+function zugElement(d, standardGleis) {
     const geplant = d.scheduledDeparture || d.scheduledArrival || "";
     const verspaetung = d.delayDeparture ?? d.delayArrival ?? 0;
     const ausgefallen = !!d.isCancelled;
@@ -446,10 +460,17 @@ function zugElement(d) {
 
     const gruende = meldungen(d);
 
+    const gleis = d.platform ? String(d.platform).trim() : "";
+    const gleisAbweichend = !ausgefallen && !!standardGleis && !!gleis && gleis !== standardGleis;
+
     const el = document.createElement("div");
     el.className = "zug" + (ausgefallen ? " ausgefallen" : "");
     el.innerHTML =
-        '<div><div class="zeit">' +
+        '<div>' +
+        (gleisAbweichend
+            ? '<div class="gleiswarnung">⚠ Abfahrt heute von Gleis ' + gleis + ' (statt Gleis ' + standardGleis + ')!</div>'
+            : '') +
+        '<div class="zeit">' +
         (tatsaechlich
             ? '<span class="alt">' + geplant + '</span> <span class="neu">' + tatsaechlich + '</span>'
             : geplant) +
@@ -457,7 +478,7 @@ function zugElement(d) {
         '<div class="info">' + (d.train || d.line || "") + ' → ' + textVon(d.destination) + '</div>' +
         (gruende ? '<div class="grund">' + gruende + '</div>' : '') + '</div>' +
         '<div class="status"><div class="' + klasse + '">' + text + '</div>' +
-        (d.platform ? '<div class="gleis">Gleis ' + d.platform + '</div>' : '') + '</div>';
+        (gleis ? '<div class="gleis' + (gleisAbweichend ? ' abweichend' : '') + '">Gleis ' + gleis + '</div>' : '') + '</div>';
     return el;
 }
 
@@ -481,7 +502,7 @@ async function laden(box) {
 
         liste.innerHTML = "";
         if (!abfahrten.length) liste.textContent = "Keine passenden Abfahrten gefunden.";
-        abfahrten.forEach(d => liste.appendChild(zugElement(d)));
+        abfahrten.forEach(d => liste.appendChild(zugElement(d, box.dataset.standardgleis)));
         stand.textContent = "Stand: " + new Date().toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
         startRefreshCountdown(box);
     } catch (e) {
