@@ -452,7 +452,7 @@ function zugElement(d, standardGleis) {
     const gleisAbweichend = !ausgefallen && !!standardGleis && !!gleis && gleis !== standardGleis;
 
     const gruende = [gleisAbweichend ? "Abfahrt heute von Gleis " + gleis + "!" : "", meldungen(d)]
-        .filter(Boolean).join(" · ");
+        .filter(Boolean).join("<br>");
 
     const el = document.createElement("div");
     el.className = "zug" + (ausgefallen ? " ausgefallen" : "");
