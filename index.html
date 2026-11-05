@@ -208,12 +208,6 @@
             margin-top: 2px;
         }
 
-        .gleiswarnung {
-            font-size: 0.78rem;
-            color: #d97706;
-            margin-bottom: 2px;
-        }
-
         .gleis.abweichend {
             color: #e74c3c;
         }
@@ -454,19 +448,16 @@ function zugElement(d, standardGleis) {
         tatsaechlich = String(Math.floor(t / 60)).padStart(2, "0") + ":" + String(t % 60).padStart(2, "0");
     }
 
-    const gruende = meldungen(d);
-
     const gleis = d.platform ? String(d.platform).trim() : "";
     const gleisAbweichend = !ausgefallen && !!standardGleis && !!gleis && gleis !== standardGleis;
+
+    const gruende = [gleisAbweichend ? "Abfahrt heute von Gleis " + gleis + "!" : "", meldungen(d)]
+        .filter(Boolean).join(" · ");
 
     const el = document.createElement("div");
     el.className = "zug" + (ausgefallen ? " ausgefallen" : "");
     el.innerHTML =
-        '<div>' +
-        (gleisAbweichend
-            ? '<div class="gleiswarnung">Abfahrt heute von Gleis ' + gleis + '!</div>'
-            : '') +
-        '<div class="zeit">' +
+        '<div><div class="zeit">' +
         (tatsaechlich
             ? '<span class="alt">' + geplant + '</span> <span class="neu">' + tatsaechlich + '</span>'
             : geplant) +
