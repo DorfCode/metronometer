@@ -1,8 +1,8 @@
 {
   "name": "Klecken",
   "short_name": "Klecken",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "../",
+  "scope": "../",
   "display": "standalone",
   "background_color": "#00387B",
   "theme_color": "#00387B",
